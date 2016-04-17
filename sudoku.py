@@ -12,6 +12,25 @@ class SudokuError(Exception):
     """
     pass
 
+
+def parse_arguments():
+    """
+    Parses argument of the form:
+        sudoku.py <board name>
+    Where 'board name' must be in the 'BOARD' list
+    """
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("--board",
+                            help="Desired board name",
+                            type=str,
+                            choices=BOARDS,
+                            required=True)
+
+    # Creates a dictionary of keys = argument flag, and value = argument
+    args = arg_parser.parse_args()
+    return args['board']
+
+
 class SudokuBoard(object):
     """
     Sudoku Board representation
@@ -230,3 +249,15 @@ class SudokuUI(Frame):
             text="You win!", tags="winner",
             fill="white", font=("Arial", 32)
         )
+
+if __name__ == '__main__':
+    board_name = parse_arguments()
+
+    with open('%s.sudoku' % board_name, 'r') as boards_file:
+        game = SudokuGame(boards_file)
+        game.start()
+
+        root = Tk()
+        SudokuUI(root, game)
+        root.geometry("%dx%d" % (WIDTH, HEIGHT + 40))
+        root.mainloop()
